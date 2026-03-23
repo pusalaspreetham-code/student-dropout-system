@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <h2 id="welcome"></h2>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- TOP CARDS -->
+    <div class="stats-grid">
+
+        <div class="card stat">
+            <h4>Attendance</h4>
+            <h2 id="attendance"></h2>
+        </div>
+
+        <div class="card stat">
+            <h4>Marks</h4>
+            <h2 id="marks"></h2>
+        </div>
+
+        <div class="card stat">
+            <h4>Study Hours</h4>
+            <h2 id="study"></h2>
+        </div>
+
+        <div class="card stat">
+            <h4>Backlogs</h4>
+            <h2 id="backlogs"></h2>
+        </div>
+
+    </div>
+
+    <!-- RISK -->
+    <div class="card">
+        <h3>Risk Analysis</h3>
+
+        <div class="progress">
+            <div id="bar" class="progress-bar"></div>
+        </div>
+
+        <p id="risk"></p>
+        <p id="level"></p>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+
+    <div class="card chart-card">
+        <h3>Risk Distribution</h3>
+        <div class="chart-box">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card chart-card">
+        <h3>Performance Overview</h3>
+        <div class="chart-box">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
