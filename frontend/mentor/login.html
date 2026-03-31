@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Student Dropout Prediction System</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Phosphor Icons (lightweight icon set) -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+
+    <!-- Brand -->
+    <div class="login-brand" aria-hidden="true">
+      <div class="brand-icon">🎓</div>
+      <h1>EduGuard</h1>
+      <p>Student Dropout Prediction System</p>
+    </div>
+
+    <!-- Card -->
+    <div class="login-card" role="main">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in with your mentor credentials to continue.</p>
+
+      <div class="form-group">
+        <label for="mentor-id">Mentor ID</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="mentor-id"
+            placeholder="e.g. M301"
+            autocomplete="username"
+            spellcheck="false"
+          />
+          <span class="input-icon">
+            <i class="ph ph-identification-card"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <span class="input-icon">
+            <i class="ph ph-lock-simple"></i>
+          </span>
+        </div>
+      </div>
+
+      <button class="btn-login" id="login-btn" type="button">
+        <span class="btn-label">Sign In</span>
+      </button>
+
+      <div class="error-msg hidden" id="error-msg" role="alert">
+        <i class="ph ph-warning-circle"></i>
+        <span id="error-text">Invalid credentials. Please try again.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

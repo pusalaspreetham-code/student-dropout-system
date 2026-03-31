@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | AI Student Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #020617; --sidebar: #0f172a; --card: rgba(30, 41, 59, 0.45);
+            --primary: #6366f1; --neon-blue: #38bdf8; --neon-purple: #c084fc;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+        }
+
+        /* BODY LOCK: Stops infinite downward scrolling */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg);
+            color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px; background: var(--sidebar); border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; padding: 30px 20px; flex-shrink: 0;
+        }
+        .logo { font-weight: 800; font-size: 22px; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .menu-item {
+            padding: 14px 18px; border-radius: 12px; cursor: pointer; transition: 0.3s;
+            color: var(--text-dim); font-weight: 600; margin-bottom: 8px; font-size: 14px;
+        }
+        .menu-item:hover, .menu-item.active { background: rgba(99, 102, 241, 0.1); color: #fff; }
+        .menu-item.active { border-left: 3px solid var(--primary); box-shadow: inset 10px 0 20px -10px var(--primary); }
+
+        /* MAIN CONTENT AREA */
+        .main-content { 
+            flex: 1; height: 100vh; overflow-y: auto; padding: 40px; 
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #020617 40%);
+        }
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PREMIUM GLASS CARDS */
+        .glass-card { 
+            background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; 
+            padding: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px;
+        }
+
+        /* CHART CONTAINER FIX: Prevents Canvas Growth */
+        .chart-container { position: relative; height: 320px; width: 100%; margin-top: 15px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+        /* CHAT FLOATER */
+        #chat-toggle { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 20px var(--primary); z-index: 9999; }
+        #chat-window { position: fixed; bottom: 100px; right: 30px; width: 360px; height: 500px; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; display: none; flex-direction: column; z-index: 9999; backdrop-filter: blur(20px); }
+        
+        /* Update these specific parts of your chat window */
+#chat-window {
+    width: 380px; /* Slightly wider for better readability */
+    height: 550px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+#chat-box::-webkit-scrollbar {
+    width: 5px;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* User Message Styling */
+.user-msg-bubble {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+    padding: 12px 16px;
+    border-radius: 18px 18px 4px 18px;
+    max-width: 80%;
+    font-size: 13px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Bot Message Styling */
+.bot-msg-bubble {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    max-width: 85%;
+    font-size: 13px;
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.5;
+}
+
+        .logout-btn { margin-top: auto; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .logout-btn:hover { background: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo"><span>💠</span> STUDENT INSIGHTS</div>
+        <div class="menu-item active" onclick="showView('overview', this)">🏠 Dashboard Overview</div>
+        <div class="menu-item" onclick="showView('academics', this)">📊 Academic Profile</div>
+        <div class="menu-item" onclick="showView('analytics', this)">📈 Predictive Insights</div>
+        <div class="menu-item" onclick="showView('personal', this)">👤 Identity Ledger</div>
+        <button class="logout-btn" onclick="logout()">Terminate Session</button>
+    </nav>
+
+    <main class="main-content">
+        <section id="overview" class="view-section active">
+            <h1 id="welcome" style="font-weight: 800; letter-spacing: -1px;">--</h1>
+            <div class="glass-card" style="text-align: center; padding: 40px;">
+                <h3 style="color:var(--neon-blue); font-size: 11px; letter-spacing: 2px;">NEURAL RISK ASSESSMENT</h3>
+                <h2 id="risk" style="font-size: 64px; margin: 15px 0;">--%</h2>
+                <div style="background: #020617; height: 12px; border-radius: 50px; overflow: hidden; margin-bottom: 20px;">
+                    <div id="bar" style="height:100%; width:0%; transition: 1.5s ease-in-out;"></div>
+                </div>
+                <span id="level" style="font-weight: 800; padding: 8px 24px; border-radius: 50px; background: rgba(255,255,255,0.05); font-size: 13px;">--</span>
+            </div>
+            <div class="glass-card">
+                <h3 style="color:var(--neon-purple); font-size: 13px; margin-bottom: 10px;">AI ADVISORY</h3>
+                <p id="ai-tip" style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">Analyzing performance vectors...</p>
+            </div>
+        </section>
+
+        <section id="analytics" class="view-section">
+            <h2 style="font-weight: 800; margin-bottom: 30px;">Predictive Intelligence</h2>
+            <div class="grid-2">
+                <div class="glass-card">
+                    <h3>Performance Trajectory</h3>
+                    <div class="chart-container"><canvas id="lineChart"></canvas></div>
+                </div>
+                <div class="glass-card">
+                    <h3>Attribute Radar</h3>
+                    <div class="chart-container"><canvas id="radarChart"></canvas></div>
+                </div>
+            </div>
+            <div class="grid-3" style="margin-top: 25px;">
+                <div class="glass-card" style="text-align: center;">
+                    <h4 style="font-size: 11px; color: var(--text-dim);">STABILITY INDEX</h4>
+                    <div style="height: 140px;"><canvas id="gauge1"></canvas></div>
+                    <p style="font-weight: 800; margin-top: -15px; font-size: 20px;">88%</p>
+                </div>
+                <div class="glass-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                    <h4 style="font-size: 11px; color: var(--text-dim);">DROPOUT PROBABILITY</h4>
+                    <h2 id="risk-mini" style="color: var(--neon-purple); font-size: 32px; margin: 10px 0;">--%</h2>
+                    <p style="font-size: 12px; color: #10b981;">Confidence: High</p>
+                </div>
+                <div class="glass-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                    <h4 style="font-size: 11px; color: var(--text-dim);">SYSTEM STATUS</h4>
+                    <h3 id="status-mini" style="margin: 10px 0; font-weight: 800;">--</h3>
+                    <p style="font-size: 10px; color: var(--text-dim);">Last Updated: Just now</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="academics" class="view-section">
+            <h2 style="font-weight: 800;">Academic Portfolio</h2>
+            <div class="grid-3">
+<div class="glass-card">
+    <h4>Attendance</h4>
+    <h2 id="attendance">--</h2>
+    <p id="attendanceStatus" style="font-size: 11px;"></p>
+</div>
+
+<div class="glass-card">
+    <h4>Average Marks</h4>
+    <h2 id="marks">--</h2>
+    <p id="marksStatus" style="font-size: 11px;"></p>
+</div>
+
+<div class="glass-card">
+    <h4>Backlogs</h4>
+    <h2 id="backlogs">--</h2>
+    <p id="backlogsStatus" style="font-size: 11px;"></p>
+</div>            </div>
+        </section>
+
+<section id="personal" class="view-section">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+        <div>
+            <h2 style="font-weight: 800; margin: 0; font-size: 28px;">Institutional Identity</h2>
+            <p style="color: var(--text-dim); font-size: 14px; margin-top: 5px;">Verified academic credentials and personal records.</p>
+        </div>
+        <div style="text-align: right;">
+            <span style="font-size: 10px; color: var(--neon-blue); letter-spacing: 2px; font-weight: 800;">ENCRYPTED DATABASE SYNC: ACTIVE</span>
+        </div>
+    </div>
+
+    <div class="grid-2" style="grid-template-columns: 320px 1fr; gap: 30px;">
+        
+        <div class="glass-card" style="text-align: center; padding: 40px 25px; border-top: 4px solid var(--primary);">
+            <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 25px;">
+                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--neon-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);">
+                    👤
+                </div>
+                <div style="position: absolute; bottom: 5px; right: 5px; width: 25px; height: 25px; background: #10b981; border: 3px solid var(--sidebar); border-radius: 50%;" title="Verified Account"></div>
+            </div>
+            
+            <h3 id="p-name-main" style="margin: 0; font-size: 22px; font-weight: 800;">--</h3>
+            <p style="color: var(--neon-blue); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">Computer Science Student</p>
+            
+            <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); text-align: left; display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span style="color: var(--text-dim);">Admission ID</span>
+                    <span id="p-id" style="font-weight: 700;">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span style="color: var(--text-dim);">Status</span>
+                    <span style="color: #10b981; font-weight: 800;">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="padding: 35px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="font-size: 16px; margin: 0;">Detailed Credentials</h3>
+                <button onclick="window.print()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 15px; border-radius: 8px; font-size: 11px; cursor: pointer; transition: 0.3s;">
+                    Download PDF
+                </button>
+            </div>
+
+            <div id="db-details" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                </div>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <div id="chat-toggle" onclick="toggleChat()">💬</div>
+    <div id="chat-window">
+        <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <b style="font-size: 14px; letter-spacing: 1px;">AI COUNSELOR</b>
+            <span onclick="toggleChat()" style="cursor: pointer; opacity: 0.5; font-size: 20px;">✕</span>
+        </div>
+        <div id="chat-box" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 13px;"></div>
+        <div style="padding: 20px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <input type="text" id="user-msg" placeholder="Inquire about risk factors..." style="flex: 1; background: #020617; border: 1px solid #1e293b; color: #fff; border-radius: 12px; padding: 12px; outline: none;">
+            <button onclick="sendMessage()" style="background: var(--primary); border: none; padding: 0 20px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 700;">SEND</button>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

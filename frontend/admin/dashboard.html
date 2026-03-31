@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Student Dropout Prediction</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <span class="brand-text">DropoutShield</span>
+        <span class="brand-sub">Admin Portal</span>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <div class="admin-badge">
+        <div class="admin-avatar" id="admin-avatar">A</div>
+        <span class="admin-name" id="admin-name">Admin</span>
+      </div>
+      <button class="btn-logout" id="logout-btn">
+        <span>⇠</span> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Manage students, assign mentors, and monitor dropout risk</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div>
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div>
+          <div class="stat-label">Assigned</div>
+          <div class="stat-value" id="stat-assigned">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon yellow">⏳</div>
+        <div>
+          <div class="stat-label">Unassigned</div>
+          <div class="stat-value" id="stat-unassigned">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">👨‍🏫</div>
+        <div>
+          <div class="stat-label">Mentors</div>
+          <div class="stat-value" id="stat-mentors">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ADD STUDENT CARD ══ -->
+    <div class="card add-student-card section-gap">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon">➕</div>
+          Add New Student
+        </div>
+        <!-- Toggle collapse -->
+        <button class="btn btn-sm" id="toggle-form-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);">
+          Hide Form
+        </button>
+      </div>
+
+      <div class="card-body" id="add-student-body">
+        <!-- Alert -->
+        <div id="form-alert"></div>
+
+        <form id="add-student-form" novalidate>
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="admission_id">Admission ID</label>
+              <input type="text" id="admission_id" placeholder="e.g. STU2024001" required />
+            </div>
+
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" placeholder="Student name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="student@email.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="date_of_birth">Date of Birth</label>
+              <input type="date" id="date_of_birth" required />
+            </div>
+
+            <div class="form-group">
+              <label for="attendance">Attendance (%)</label>
+              <input type="number" id="attendance" min="0" max="100" placeholder="0–100" required />
+            </div>
+
+            <div class="form-group">
+              <label for="marks">Current Marks</label>
+              <input type="number" id="marks" min="0" max="100" placeholder="0–100" required />
+            </div>
+
+            <div class="form-group">
+              <label for="study_hours">Study Hours / Day</label>
+              <input type="number" id="study_hours" min="0" max="24" placeholder="0–24" required />
+            </div>
+
+            <div class="form-group">
+              <label for="distance_from_home">Distance from Home (km)</label>
+              <input type="number" id="distance_from_home" min="0" placeholder="e.g. 12" required />
+            </div>
+
+            <div class="form-group">
+              <label for="annual_income">Annual Family Income (₹)</label>
+              <input type="number" id="annual_income" min="0" placeholder="e.g. 300000" required />
+            </div>
+
+            <div class="form-group">
+              <label for="previous_marks">Previous Marks</label>
+              <input type="number" id="previous_marks" min="0" max="100" placeholder="0–100" required />
+            </div>
+
+            <div class="form-group">
+              <label for="backlogs">Backlogs</label>
+              <input type="number" id="backlogs" min="0" placeholder="e.g. 0" required />
+            </div>
+
+            <div class="form-group">
+              <label for="assignments_completed">Assignments Completed (%)</label>
+              <input type="number" id="assignments_completed" min="0" max="100" placeholder="0–100" required />
+            </div>
+
+            <div class="form-group">
+              <label for="participation">Participation Score</label>
+              <input type="number" id="participation" min="0" max="100" placeholder="0–100" required />
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-success" id="add-student-btn">
+              ➕ Add Student
+            </button>
+            <button type="button" class="btn btn-sm" id="clear-form-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);">
+              Clear Form
+            </button>
+          </div>
+        </form>
+      </div><!-- /card-body -->
+    </div><!-- /add-student-card -->
+
+    <!-- ══ STUDENTS TABLE CARD ══ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon">📋</div>
+          All Students
+        </div>
+        <button class="btn btn-sm" id="refresh-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);">
+          ↻ Refresh
+        </button>
+      </div>
+      <div class="card-body">
+        <div id="table-alert"></div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="students-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Admission ID</th>
+                <th>Current Mentor</th>
+                <th>Assign Mentor</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="icon">⏳</div>
+                    <p>Loading students…</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ CONFIRM DELETE DIALOG ══ -->
+<div class="overlay" id="delete-overlay">
+  <div class="dialog">
+    <h3>Delete Student</h3>
+    <p id="delete-msg">Are you sure you want to remove this student? This action cannot be undone.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-sm" id="cancel-delete-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);">
+        Cancel
+      </button>
+      <button class="btn btn-danger" id="confirm-delete-btn">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div id="toast-container"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

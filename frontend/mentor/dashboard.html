@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Student Dropout Prediction System</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body class="dashboard-page">
+
+  <!-- ══ Loading Overlay ══ -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loader-ring"></div>
+    <p>Loading student data…</p>
+  </div>
+
+  <!-- ══ Toast ══ -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-icon" id="toast-icon"></span>
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STUDENT DETAIL MODAL
+  ══════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+    <div class="modal" id="student-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-student-info">
+          <div class="modal-avatar" id="modal-avatar">AB</div>
+          <div>
+            <h2 class="modal-title" id="modal-title">Student Name</h2>
+            <div class="modal-risk-row">
+              <span class="risk-badge" id="modal-risk-badge"><span class="badge-dot"></span>—</span>
+              <span class="modal-risk-pct" id="modal-risk-pct">—%</span>
+              <span class="modal-prediction-text" id="modal-prediction-text">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-header-actions">
+          <button class="btn-refresh-pred" id="modal-refresh-btn" type="button">
+            <i class="ph ph-arrows-clockwise"></i>
+            <span>Refresh</span>
+          </button>
+          <button class="modal-close" id="modal-close" type="button" aria-label="Close">
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs" role="tablist">
+        <button class="tab-btn active" data-tab="details" role="tab" aria-selected="true">
+          <i class="ph ph-info"></i> Details
+        </button>
+        <button class="tab-btn" data-tab="chart" role="tab" aria-selected="false">
+          <i class="ph ph-chart-radar"></i> Chart
+        </button>
+        <button class="tab-btn" data-tab="recommendation" role="tab" aria-selected="false">
+          <i class="ph ph-lightbulb"></i> Recommendation
+        </button>
+        <button class="tab-btn" data-tab="notes" role="tab" aria-selected="false">
+          <i class="ph ph-note-pencil"></i> Notes
+          <span class="tab-notes-dot hidden" id="tab-notes-dot"></span>
+        </button>
+      </div>
+
+      <!-- Tab: Details -->
+      <div class="tab-panel active" id="tab-details" role="tabpanel">
+        <div class="detail-grid" id="detail-grid"></div>
+      </div>
+
+      <!-- Tab: Chart -->
+      <div class="tab-panel" id="tab-chart" role="tabpanel">
+        <div class="radar-wrap">
+          <canvas id="student-radar-chart"></canvas>
+        </div>
+        <p class="chart-caption">Normalised student metrics (0–100 scale) vs. safe-zone thresholds.</p>
+      </div>
+
+      <!-- Tab: Recommendation -->
+      <div class="tab-panel" id="tab-recommendation" role="tabpanel">
+        <div class="reco-banner" id="reco-banner">
+          <div class="reco-banner-icon" id="reco-banner-icon">⚠️</div>
+          <div>
+            <h3 id="reco-heading">Intervention Required</h3>
+            <p id="reco-subheading" class="reco-sub">High dropout risk detected. Immediate action recommended.</p>
+          </div>
+        </div>
+        <div class="reco-list" id="reco-list"></div>
+      </div>
+
+      <!-- Tab: Notes -->
+      <div class="tab-panel" id="tab-notes" role="tabpanel">
+        <div class="notes-header">
+          <h3><i class="ph ph-note-pencil"></i> Mentor Notes</h3>
+          <div class="notes-header-right">
+            <span class="notes-autosave-label" id="notes-autosave-label"></span>
+            <button class="btn-save-note" id="btn-save-note" type="button">
+              <i class="ph ph-floppy-disk"></i> Save
+            </button>
+          </div>
+        </div>
+        <textarea
+          class="notes-textarea"
+          id="notes-textarea"
+          placeholder="Write observations, action items, or follow-up notes here…"
+          rows="5"
+        ></textarea>
+        <div class="notes-log" id="notes-log"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">🎓</div>
+      <div class="brand-text">
+        <h2>EduGuard</h2>
+        <span>Dropout Prediction System</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-mentor-info">
+        <div class="mentor-name" id="nav-mentor-name">—</div>
+        <div class="mentor-id" id="nav-mentor-id">—</div>
+      </div>
+      <button class="btn-icon-nav" id="refresh-all-btn" type="button" title="Refresh all student predictions">
+        <i class="ph ph-arrows-clockwise"></i>
+      </button>
+      <button class="btn-logout" id="logout-btn" type="button">
+        <i class="ph ph-sign-out"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <h1>Student Risk Overview</h1>
+      <p id="header-subtitle">Monitoring your assigned students for dropout risk signals.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-icon"><i class="ph ph-users"></i></div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card high">
+        <div class="stat-icon"><i class="ph ph-warning"></i></div>
+        <div class="stat-value" id="stat-high">—</div>
+        <div class="stat-label">High Risk</div>
+      </div>
+      <div class="stat-card medium">
+        <div class="stat-icon"><i class="ph ph-chart-line-up"></i></div>
+        <div class="stat-value" id="stat-medium">—</div>
+        <div class="stat-label">Medium Risk</div>
+      </div>
+      <div class="stat-card low">
+        <div class="stat-icon"><i class="ph ph-check-circle"></i></div>
+        <div class="stat-value" id="stat-low">—</div>
+        <div class="stat-label">Low Risk</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+    <div class="glass-card">
+        <h4>Attendance</h4>
+        <h2 id="attendance">--</h2>
+        <p id="attendanceStatus" style="font-size: 11px;"></p>
+    </div>
+
+    <div class="glass-card">
+        <h4>Average Marks</h4>
+        <h2 id="marks">--</h2>
+        <p id="marksStatus" style="font-size: 11px;"></p>
+    </div>
+
+    <div class="glass-card">
+        <h4>Backlogs</h4>
+        <h2 id="backlogs">--</h2>
+        <p id="backlogsStatus" style="font-size: 11px;"></p>
+    </div>
+</div>
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <!-- Doughnut -->
+      <div class="chart-card chart-doughnut-card">
+        <div class="chart-card-header">
+          <h3><i class="ph ph-chart-donut"></i> Risk Distribution</h3>
+        </div>
+        <div class="doughnut-wrap">
+          <canvas id="risk-doughnut"></canvas>
+          <div class="doughnut-center">
+            <span class="dc-num" id="dc-total">0</span>
+            <span class="dc-label">Students</span>
+          </div>
+        </div>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+
+      <!-- Bar -->
+      <div class="chart-card chart-bar-card">
+        <div class="chart-card-header">
+          <h3><i class="ph ph-chart-bar"></i> Risk % by Student</h3>
+          <span class="chart-hint">Top 15 highest risk</span>
+        </div>
+        <div class="bar-wrap">
+          <canvas id="risk-bar"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <div class="search-wrap">
+        <span class="search-icon"><i class="ph ph-magnifying-glass"></i></span>
+        <input
+          type="search"
+          class="search-input"
+          id="search-input"
+          placeholder="Search by student name…"
+          aria-label="Search students"
+        />
+      </div>
+
+      <div class="filter-btns" role="group" aria-label="Filter by risk level">
+        <button class="filter-btn active-all" data-filter="all" type="button">All</button>
+        <button class="filter-btn" data-filter="High" type="button"><span class="dot"></span> High</button>
+        <button class="filter-btn" data-filter="Medium" type="button"><span class="dot"></span> Medium</button>
+        <button class="filter-btn" data-filter="Low" type="button"><span class="dot"></span> Low</button>
+      </div>
+
+      <span class="results-info" id="results-info">— students</span>
+
+      <button class="btn-export" id="export-btn" type="button">
+        <i class="ph ph-download-simple"></i> Export CSV
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3>Student Records</h3>
+        <span class="table-badge" id="table-badge">0 records</span>
+      </div>
+
+      <div class="table-wrap">
+        <table id="students-table" aria-label="Student dropout risk table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Attendance</th>
+              <th>Marks</th>
+              <th>Study Hrs</th>
+              <th>Risk %</th>
+              <th>Risk Level</th>
+              <th>Prediction</th>
+              <th>Note</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="empty-state hidden" id="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>No students match your current search or filter.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

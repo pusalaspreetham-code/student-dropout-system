@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | AI Dropout Predictor</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.7);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f87171;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, #020617 50%),
+                        radial-gradient(circle at 100% 100%, #115e59 0%, #020617 50%);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- MARVELOUS ANIMATIONS --- */
+        @keyframes floatingIcon {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(40px); filter: blur(15px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            animation: reveal 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .login-card {
+            background: var(--card);
+            padding: 50px 40px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(30px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Animated Student Symbol */
+        .student-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: floatingIcon 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--primary-glow));
+        }
+
+        h1 { 
+            font-size: 32px; 
+            font-weight: 800; 
+            margin: 0; 
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline { color: var(--text-dim); margin: 10px 0 40px 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-dim);
+            transition: 0.3s;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border-radius: 20px;
+            border: 1px solid #1e293b;
+            background: rgba(2, 6, 23, 0.8);
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 1);
+            box-shadow: 0 0 0 5px var(--primary-glow);
+            transform: translateY(-3px);
+        }
+
+        input:focus + i { color: var(--primary); transform: translateY(-50%) scale(1.2); }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
+            filter: brightness(1.15);
+        }
+
+        #error {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 20px;
+            font-weight: 700;
+            min-height: 20px;
+        }
+
+        .admin-link-box {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .admin-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .admin-link:hover { color: var(--primary); letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="student-icon">👨‍🎓</div>
+            
+            <h1>Student Portal</h1>
+            <div class="tagline">AI Risk Assessment</div>
+            
+            <div class="input-container">
+                <input type="text" id="admission_id" placeholder="Admission ID">
+                <i>🆔</i>
+            </div>
+            
+            <div class="input-container">
+                <input type="date" id="date_of_birth">
+                <i>📅</i>
+            </div>
+            
+            <button onclick="login()">Check My Status</button>
+            
+            <p id="error"></p>
+            
+            
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
