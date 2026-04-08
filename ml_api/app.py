@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# -------- LOAD MODEL --------
 model = pickle.load(open("../Voting Model/model/voting_model.pkl", "rb"))
 
 # -------- FEATURE LIST (FROM VERSION 1) --------

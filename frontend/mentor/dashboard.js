@@ -327,6 +327,15 @@ barChart = new Chart(bCtx, {
             <i class="ph ${hasNote ? 'ph-note-fill' : 'ph-note'}"></i>
           </span>
         </td>
+         <td>
+          ${s.email
+            ? `<a class="btn-action btn-mail" href="mailto:${esc(s.email)}" title="Mail ${esc(s.name)}">
+                <i class="ph ph-envelope-simple"></i>
+               </a>`
+            : `<span class="btn-action" style="opacity:.3;cursor:default" title="No email on file">
+                <i class="ph ph-envelope-simple-slash"></i>
+               </span>`}
+        </td>
         <td>
           <div class="action-btns">
             <button class="btn-action btn-view" data-idx="${i}" title="View Details">

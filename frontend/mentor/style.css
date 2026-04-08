@@ -340,6 +340,8 @@ tbody td { padding: 14px 18px; font-size: 0.88rem; vertical-align: middle; white
 }
 .btn-view:hover     { background: var(--accent-glow); border-color: var(--accent-blue); color: var(--accent-blue); }
 .btn-refresh-row:hover { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--risk-low); }
+.btn-mail:hover     { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.3); color: var(--accent-cyan); text-decoration: none; }
+.btn-mail           { display: inline-flex; align-items: center; justify-content: center; }
 .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Empty state */
@@ -582,4 +584,23 @@ tbody td { padding: 14px 18px; font-size: 0.88rem; vertical-align: middle; white
   .tab-btn { white-space: nowrap; }
   .modal-header { flex-direction: column; gap: 12px; }
   .modal-header-actions { align-self: flex-end; }
+}
+#students-table button .ph-arrows-clockwise {
+  display: none;
+}
+
+#students-table button:has(.ph-arrows-clockwise) {
+  display: none;
+}
+/* Hide any refresh icon button inside modal */
+#student-modal .ph-arrows-clockwise {
+  display: none;
+}
+
+#student-modal button:has(.ph-arrows-clockwise) {
+  display: none;
+}
+/* Hide Attendance / Marks / Backlogs section */
+.glass-card {
+  display: none !important;
 }
